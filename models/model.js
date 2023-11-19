@@ -12,6 +12,10 @@ const bankSchema = new mongoose.Schema({
     },
     transactionFee: {
         type: Number
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
     }
 })
 
