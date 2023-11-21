@@ -22,6 +22,6 @@ app.use(express.json());
 
 app.use('/api/banks/', routes)
 
-app.listen(3000, () => {
-    console.log(`Server Started at ${3000}`)
+app.listen(9000, () => {
+    console.log(`Server Started at ${9000}`)
 })
