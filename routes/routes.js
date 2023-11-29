@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:accountNumber', async (req, res) => {
+router.get('/accountNumber/:accountNumber', async (req, res) => {
     const accountNumber = req.params.accountNumber;
     try {
         const data = await Bank.findOne({
@@ -32,12 +32,27 @@ router.get('/:accountNumber', async (req, res) => {
     }
 });
 
-router.delete('/:accountNumber', async (req, res) => {
-    const accountNumber = req.params.accountNumber;
+
+router.get('/:id', async (req, res) => {
+    // const id = new ObjectId(req.params.id);
+    const id = req.params.id;
     try {
-        const data = await Bank.findOne({
-            accountNumber: accountNumber
-        });
+        const data = await Bank.findById(id.toString());
+        if (!data) {
+            res.status(404).json({ message: `${id} is not existing` });
+        } else {
+            res.json(data)
+        }
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const data = await Bank.findByIdAndDelete(id);
         if (!data) {
             res.status(404).json({ message: `${accountNumber} is not existing` });
         } else {
@@ -54,7 +69,7 @@ router.delete('/:accountNumber', async (req, res) => {
 router.post('/', async (req, res) => {
     const accountNumber = req.body.accountNumber;
 
-    const data = new Bank({
+    const bankPayload = new Bank({
         accountNumber: accountNumber,
         trust: req.body.trust,
         transactionFee: req.body.transactionFee,
@@ -66,7 +81,7 @@ router.post('/', async (req, res) => {
             accountNumber: accountNumber
         });
         if (!dataToFind) {
-            const dataToSave = await data.save();
+            const dataToSave = await bankPayload.save();
             res.status(201).json(dataToSave)
         } else {
             res.status(400).json({ message: `${accountNumber} is already taken` });
@@ -77,17 +92,15 @@ router.post('/', async (req, res) => {
 });
 
 
-router.put('/', async (req, res) => {
-    const accountNumber = req.body.accountNumber;
+router.put('/:id', async (req, res) => {
+    const id = req.params.id;
     const updatedData = req.body;
     const options = { new: true };
 
     try {
-        const dataToFind = await Bank.findOne({
-            accountNumber: accountNumber
-        });
+        const dataToFind = await Bank.findById(id);
         if (!dataToFind) {
-            res.status(400).json({ message: `${accountNumber} is not existing` });
+            res.status(400).json({ message: `${id} is not existing` });
         } else {
             const result = await Bank.findByIdAndUpdate(dataToFind._id, updatedData, options);
             res.send(result);

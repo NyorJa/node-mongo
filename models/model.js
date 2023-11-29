@@ -17,6 +17,13 @@ const bankSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 })
+
+bankSchema.virtual('id', {
+    id: this.id
+  });
 
 module.exports = mongoose.model("banks", bankSchema);
